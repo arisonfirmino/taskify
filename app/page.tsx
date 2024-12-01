@@ -4,6 +4,7 @@ import { db } from "@/app/lib/prisma";
 import { authOptions } from "@/app/lib/auth";
 import { getServerSession } from "next-auth";
 import Taskslist from "@/app/components/tasks-list";
+import TaskEmptyState from "@/app/components/task-empty-state";
 
 const Home = async () => {
   const session = await getServerSession(authOptions);
@@ -29,7 +30,7 @@ const Home = async () => {
     <main className="flex flex-col items-center justify-center gap-5 pb-10 pt-40 text-sm">
       <Header />
       {!session && (
-        <p className="text-base text-gray-600">
+        <p className="px-5 text-center text-base text-gray-600 md:px-0">
           faça login para criar e acompanhar suas tarefas facilmente!
         </p>
       )}
@@ -37,7 +38,12 @@ const Home = async () => {
         className={`w-full space-y-5 px-5 md:max-w-80 md:px-0 ${!session ? "pointer-events-none opacity-50" : ""}`}
       >
         <NewTask />
-        {user && <Taskslist tasks={user.tasks} />}
+        {user &&
+          (user.tasks.length === 0 ? (
+            <TaskEmptyState />
+          ) : (
+            <Taskslist tasks={user.tasks} />
+          ))}
       </section>
     </main>
   );
